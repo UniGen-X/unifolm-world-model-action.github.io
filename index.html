@@ -110,15 +110,16 @@
       border-radius: 8px;
     }
 
-    .video-container iframe {
+    .video-container video {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       border: none;
+      object-fit: cover; /* optional: makes sure video fills nicely */
+      border-radius: 8px; /* match the container’s rounded corners */
     }
-
     /* Language visibility */
     .lang {
       display: none;
