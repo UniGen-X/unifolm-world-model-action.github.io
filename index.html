@@ -27,13 +27,24 @@
       font-size: 0.9rem;
     }
 
+    /* Language toggle button */
+    .lang-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      background: none;
+      border: none;
+      color: #0077cc;
+    }
+
     /* 4x4 grid */
-    /* 4x4 grid centered */
     .image-grid {
       display: grid;
-      grid-template-columns: repeat(4, auto); /* auto = original width */
-      justify-content: center;   /* center the whole grid */
-      align-items: center;       /* align items vertically */
+      grid-template-columns: repeat(4, auto);
+      justify-content: center;
+      align-items: center;
       gap: 10px;
       padding: 1rem;
     }
@@ -76,19 +87,34 @@
       height: 100%;
       border: none;
     }
+
+    /* Language visibility */
+    .lang {
+      display: none;
+    }
+    .lang.en {
+      display: block;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Language Switch -->
+  <button class="lang-toggle" onclick="toggleLanguage()">🌎 English | 🇨🇳 中文</button>
+
   <header>
-    <h1>UnifoLM-WMA-0: A World-Model-Action(WMA) Framework under UnifoLM Family</h1>
-    <p>5 Sep 2025</p>
-    <p>Unitree Embodied AI R&D Team</p>
+    <h1 class="lang en">UnifoLM-WMA-0: A World-Model-Action(WMA) Framework under UnifoLM Family</h1>
+    <h1 class="lang zh">UnifoLM-WMA-0：UnifoLM 系列下的世界-模型-动作（WMA）框架</h1>
+
+    <p class="lang en">5 Sep 2025</p>
+    <p class="lang zh">2025年9月5日</p>
+
+    <p class="lang en">Unitree Embodied AI R&D Team</p>
+    <p class="lang zh">宇树具身智能研发团队</p>
   </header>
 
   <!-- 4x4 Image Grid -->
   <section class="image-grid">
-    <!-- Example: first tile as GIF -->
     <img src="assets/gifs/open-x/0.gif" alt="Open-X 0">
     <img src="assets/gifs/open-x/1.gif" alt="Open-X 1">
     <img src="assets/gifs/open-x/2.gif" alt="Open-X 2">
@@ -109,33 +135,35 @@
 
   <!-- Intro Section -->
   <section class="section">
-    <p>
-      Today we are announcing UnifoLM-WMA-0 
-    </p>
+    <p class="lang en">Today we are announcing UnifoLM-WMA-0</p>
+    <p class="lang zh">今天我们正式发布 UnifoLM-WMA-0</p>
   </section>
 
   <!-- Video Section -->
   <section class="section">
     <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
-              title="Genie 3 - A new frontier for world models" 
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+              title="Genie 3 - A new frontier for world models"
               allowfullscreen></iframe>
     </div>
   </section>
 
-  <!-- Article Section -->
-  <!-- <section class="section"> -->
-  <!--   <h2>Towards world simulation</h2> -->
-  <!--   <p> -->
-  <!--     At Google DeepMind, we have been pioneering research in simulated environments for over a decade, from training agents to master real-time strategy games to developing simulated environments for open-ended learning and robotics. -->
-  <!--   </p> -->
-  <!--   <p> -->
-  <!--     This work motivated our development of world models, which are AI systems that can use their understanding of the world to simulate aspects of it, enabling agents to predict how an environment will evolve and how their actions will affect it. -->
-  <!--   </p> -->
-  <!--   <p> -->
-  <!--     Each of these models marks progress along different capabilities of world simulation. Genie 3 is our first world model able to generate interactive video in real time, while also improving consistency and realism compared to Genie 2. -->
-  <!--   </p> -->
-  <!-- </section> -->
+  <script>
+    let currentLang = "en"; // default English
+    function toggleLanguage() {
+      const enTexts = document.querySelectorAll('.lang.en');
+      const zhTexts = document.querySelectorAll('.lang.zh');
+      if (currentLang === "en") {
+        enTexts.forEach(el => el.style.display = "none");
+        zhTexts.forEach(el => el.style.display = "block");
+        currentLang = "zh";
+      } else {
+        zhTexts.forEach(el => el.style.display = "none");
+        enTexts.forEach(el => el.style.display = "block");
+        currentLang = "en";
+      }
+    }
+  </script>
 
 </body>
 </html>
