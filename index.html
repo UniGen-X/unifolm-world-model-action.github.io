@@ -292,6 +292,11 @@
     </div>
  </div>
 
+  <div class="caption" id="caption" role="status" aria-live="polite">
+    <p class="lang en" id="cap-en"></p>
+    <p class="lang zh" id="cap-zh" style="display:none"></p>
+  </div>
+
   <div class="dots" id="dots" role="tablist" aria-label="video pagination">
     <button class="dot" aria-label="Video 1" aria-current="false" data-go="0"></button>
     <button class="dot" aria-label="Video 2" aria-current="false" data-go="1"></button>
@@ -305,6 +310,24 @@
       const cards = [...track.querySelectorAll('.card')];
       const dots  = [...document.querySelectorAll('.dot')];
       const n = cards.length;
+
+      const capEn = document.getElementById('cap-en');
+      const capZh = document.getElementById('cap-zh');
+
+      const captions = {
+        en: [
+          "Z1 – Stack Box (single arm)",
+          "G1 – Pack Camera (dual-arm manipulation)",
+          "G1 – Cleanup Pencils (tabletop tidy-up)",
+          "G1 – Dual-Arm Stack Box (coordinated lifting)"
+        ],
+        zh: [
+          "Z1——叠箱（单臂）",
+          "G1——相机装箱（双臂操作）",
+          "G1——清理铅笔（桌面整理）",
+          "G1——双臂叠箱（协同抬举）"
+        ]
+      };
 
       let current = 1; // start with 2nd video centered
 
@@ -334,6 +357,10 @@
         });
 
         dots.forEach((d,i)=> d.setAttribute('aria-current', i===center ? 'true' : 'false'));
+        
+        // NEW: update captions
+        capEn.textContent = captions.en[center] || "";
+        capZh.textContent = captions.zh[center] || "";
       }
 
       // move one step (dir = +1 forward, -1 backward)
