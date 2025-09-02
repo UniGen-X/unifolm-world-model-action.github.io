@@ -82,28 +82,7 @@
         .track{ grid-template-columns: 1fr; gap:14px; }
         .card.is-left,.card.is-right{ transform: scale(.94); }
     }
-    .dot{
-        width:10px;
-        height:10px;
-        border-radius:999px;
-        background: transparent;
-        border: 2px solid var(--dot-border);
-        cursor:pointer;
-        transition: transform .2s ease, background .2s ease, width .2s ease;
-    }
-    .dot[aria-current="true"]{
-        width: 34px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #f0f0f0 0%, #b0b0b0 50%, ##6e6e6e 100%);
-        border: 0.5px solid #555;
-    }
-    /* 响应式：窄屏时竖排显示但仍突出中间 */
-    @media (max-width: 860px){
-        .track{grid-template-columns: 1fr; gap: 14px;}
-        .card.is-left,.card.is-right{
-          transform: scale(.94);
-        }
-    }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -125,6 +104,7 @@
       color: #666;
       font-size: 0.9rem;
     }
+
     .code-btn {
       display: inline-flex;
       align-items: center;
