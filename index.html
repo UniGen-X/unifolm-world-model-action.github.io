@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+CTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,20 +7,18 @@
   <title>UnifoLM-WMA-0: A World-Model-Action(WMA) Framework under UnifoLM Family</title>
   <style>
     :root{
-        --dot: #6b7280;      /* 未选中圆点 */
-        --dot-active:#4f73ff;/* 选中圆点 */
-        --bg:#0b0b0d;
-        --border:#4461ff;
+        --dot: transparent;   /* inactive fill is transparent */
+        --dot-border:#000;    /* inactive border is black */
     }
     .carousel{
         max-width: 1040px;
         margin: 6vh auto;
         padding: 0 16px;
-        perspective: 1200px; /* 给两侧一点3D倾斜感 */
+        perspective: 1200px;
     }
     .track{
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr); /* show 4 */
         gap: 24px;
         align-items: center;
     }
@@ -39,12 +38,11 @@
         object-fit: cover;
         display: block;
     }
-    /* 中间高亮，左右变暗并略微倾斜 */
     .card.is-center{
         transform: translateZ(0) scale(1.02);
         filter: brightness(1);
         opacity: 1;
-        border-color: var(--border);
+        border-color: #4461ff;
     }
     .card.is-left{
         transform: rotateY(12deg) scale(.94);
@@ -56,7 +54,12 @@
         filter: brightness(.55);
         opacity: .7;
     }
-    /* 底部文案与圆点 */
+    .card.is-away{
+        transform: scale(.9);
+        filter: brightness(.4);
+        opacity: .55;
+    }
+
     .caption{
         text-align:center;
         margin: 22px 0 10px;
@@ -68,23 +71,28 @@
         margin-top:8px;
     }
     .dot{
-        width:10px;height:10px;border-radius:999px;
-        background: var(--dot);
+        width:12px;
+        height:12px;
+        border-radius:999px;
+        background: transparent;
+        border: 2px solid var(--dot-border);
         cursor:pointer;
-        transition: transform .2s ease, background .2s ease, width .2s ease;
+        transition: transform .2s ease, background .2s ease, width .2s ease, border-color .2s ease;
     }
     .dot[aria-current="true"]{
-        background: var(--dot-active);
-        width: 28px;          /* 选中态做成小胶囊 */
+        width: 34px;
         border-radius: 999px;
+        background: linear-gradient(90deg, #38bdf8 0%, #93c5fd 100%);
+        border-color: #60a5fa;
     }
-    /* 响应式：窄屏时竖排显示但仍突出中间 */
+
     @media (max-width: 860px){
         .track{grid-template-columns: 1fr; gap: 14px;}
-        .card.is-left,.card.is-right{
+        .card.is-left,.card.is-right,.card.is-away{
           transform: scale(.94);
         }
     }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -106,31 +114,23 @@
       color: #666;
       font-size: 0.9rem;
     }
+
     .code-btn {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background-color: #24292f; /* GitHub dark gray */
+      background-color: #24292f;
       color: white;
-      /* ↓ reduced padding ~20% */
       padding: 0.45rem 0.95rem;
-      border-radius: 1.6rem;       /* keep pill shape proportional */
+      border-radius: 1.6rem;
       font-size: 1rem;
       font-family: Arial, sans-serif;
       text-decoration: none;
       transition: background 0.2s;
     }
+    .code-btn:hover { background-color: #2f363d; }
+    .code-btn .code-icon { width: 18px; height: 18px; }
 
-    .code-btn:hover {
-      background-color: #2f363d;
-    }
-
-    .code-btn .code-icon {
-      width: 18px;
-      height: 18px; /* keep logo original size */
-    }
-
-    /* Language toggle button */
     .lang-toggle {
       position: absolute;
       top: 1rem;
@@ -142,7 +142,6 @@
       color: #0077cc;
     }
 
-    /* 4x4 grid */
     .image-grid {
       display: grid;
       grid-template-columns: repeat(4, 240px);
@@ -151,7 +150,6 @@
       gap: 5px;
       padding: 1rem;
     }
-
     .image-grid img,
     .image-grid video {
       width: 100%;
@@ -159,7 +157,7 @@
       object-fit: contain;
       border-radius: 4px;
       display: block;
-      margin: 0 auto; 
+      margin: 0 auto;
     }
 
     .section {
@@ -174,44 +172,32 @@
       color: #666;
       font-size: 0.9rem;
     }
-
-    .section h2 {
-      margin-top: 2rem;
-      font-size: 1.6rem;
-    }
+    .section h2 { margin-top: 2rem; font-size: 1.6rem; }
 
     .video-container {
       position: relative;
-      padding-bottom: 56.25%; /* 16:9 */
+      padding-bottom: 56.25%;
       height: 0;
       overflow: hidden;
       max-width: 100%;
       margin: 2rem 0;
       border-radius: 8px;
     }
-
     .video-container video {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       border: none;
-      object-fit: cover; /* optional: makes sure video fills nicely */
-      border-radius: 8px; /* match the container’s rounded corners */
+      object-fit: cover;
+      border-radius: 8px;
     }
-    /* Language visibility */
-    .lang {
-      display: none;
-    }
-    .lang.en {
-      display: block;
-    }
+
+    .lang { display: none; }
+    .lang.en { display: block; }
   </style>
 </head>
 <body>
 
-  <!-- Language Switch -->
   <button class="lang-toggle" onclick="toggleLanguage()">🌎 English | 🇨🇳 中文</button>
 
   <header>
@@ -220,163 +206,104 @@
 
     <a href="https://unigen-x.github.io/unifolm-world-model-action.github.io/" class="code-btn">
       <svg xmlns="https://unigen-x.github.io/unifolm-world-model-action.github.io/" class="code-icon" viewBox="0 0 24 24" fill="white">
-        <path d="M12 .297c-6.63 0-12 5.373-12 12 
-          0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 
-          0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61
-          -.546-1.385-1.333-1.754-1.333-1.754-1.09-.745.083-.729.083-.729 
-          1.205.084 1.84 1.236 1.84 1.236 
-          1.07 1.835 2.807 1.304 3.492.997.108-.776.418-1.305.762-1.605
-          -2.665-.3-5.466-1.332-5.466-5.93 
-          0-1.31.468-2.38 1.236-3.22-.123-.303-.536-1.523.117-3.176 
-          0 0 1.008-.322 3.3 1.23a11.48 11.48 0 013.003-.404 
-          c1.02.005 2.047.138 3.003.404 
-          2.291-1.552 3.297-1.23 3.297-1.23 
-          .653 1.653.24 2.873.117 3.176.77.84 
-          1.236 1.91 1.236 3.22 
-          0 4.61-2.803 5.625-5.475 5.92.43.372.823 1.102.823 2.222 
-          0 1.606-.015 2.896-.015 3.286 
-          0 .317.216.687.825.57C20.565 22.092 24 17.592 24 12.297 
-          c0-6.627-5.373-12-12-12"/>
+        <path d="M12 .297c-6.63 0-12 5.373-12 12 ..."/>
       </svg>
       Code(coming soon)
     </a>
 
     <p class="lang en">5 Sep 2025</p>
     <p class="lang zh">2025年9月5日</p>
-
     <p class="lang en">Unitree Embodied AI R&D Team</p>
     <p class="lang zh">宇树科技具身智能研发团队</p>
   </header>
 
-  <!-- Intro Section -->
   <section class="section">
-    <p class="lang en"> <b>UnifoLM-WMA-0</b> is Unitree‘s first open-source world-model–action architecture spanning multiple types of robotic embodiments, designed specifically for general-purpose robot learning. Its core component is a world-model capable of understanding the physical interactions between robots and their environments. This world-model provides two key functions: (a) <b>Simulation Engine</b> – operates as an interactive simulator to generate synthetic data for robot learning; (b) <b>Policy Enhancement</b> – connects with an action head and, by predicting future interaction processes with the world-model, further optimizes decision-making performance.</p>
-    <p class="lang zh"> <b>UnifoLM-WMA-0</b> 是宇树科技首个跨多类机器人本体的开源世界模型动作架构，专为通用机器人学习而设计。其核心成分在于一个可以理解机器人与环境交互物理规律的世界模型。该世界模型具备两大核心功能：（1）<b>仿真引擎</b>，作为交互式仿真器运行，为机器人学习生成合成数据;（2）<b>策略增强</b>，可与一个动作头进行对接，通过预测未来与物理世界的交互过程，进一步优化决策性能。</p>
+    <p class="lang en"><b>UnifoLM-WMA-0</b> is Unitree‘s first open-source world-model–action architecture...</p>
+    <p class="lang zh"><b>UnifoLM-WMA-0</b> 是宇树科技首个跨多类机器人本体的开源世界模型动作架构...</p>
   </section>
 
   <div class="track" id="track">
-    <div class="card is-left"   data-index="0">
+    <div class="card is-left" data-index="0">
         <video src="assets/videos/real_z1_stackbox.MP4" muted loop playsinline></video>
     </div>
     <div class="card is-center" data-index="1">
         <video src="assets/videos/real_dual_stackbox.mp4" muted autoplay loop playsinline></video>
     </div>
-    <div class="card is-right"  data-index="2">
+    <div class="card is-right" data-index="2">
         <video src="assets/videos/real_cleanup_pencils.MP4" muted loop playsinline></video>
     </div>
-    <div class="card"           data-index="3">
+    <div class="card is-away" data-index="3">
         <video src="assets/videos/real_g1_pack_camera.mp4" muted loop playsinline></video>
     </div>
   </div>
 
-  <div class="dots" id="dots" role="tablist" aria-label="video pagination">
-      <button class="dot" aria-label="Video 1" aria-current="false" data-go="0"></button>
-      <button class="dot" aria-label="Video 2" aria-current="false"  data-go="1"></button>
-      <button class="dot" aria-label="Video 3" aria-current="true" data-go="2"></button>
-      <button class="dot" aria-label="Video 4" aria-current="false" data-go="3"></button>
+  <div class="dots" id="dots">
+    <button class="dot" aria-label="Video 1" aria-current="false" data-go="0"></button>
+    <button class="dot" aria-label="Video 2" aria-current="false" data-go="1"></button>
+    <button class="dot" aria-label="Video 3" aria-current="false" data-go="2"></button>
+    <button class="dot" aria-label="Video 4" aria-current="false" data-go="3"></button>
   </div>
+
   <script>
-    (() => {
-      const track = document.getElementById('track');
-      const cards = [...track.querySelectorAll('.card')];
-      const dots  = [...document.querySelectorAll('.dot')];
+  (() => {
+    const track = document.getElementById('track');
+    const cards = [...track.querySelectorAll('.card')];
+    const dots  = [...document.querySelectorAll('.dot')];
 
-      // 当前高亮索引（始终让它显示在中间位置）
-      let current = 1; // 初始为中间
+    let current = 1; // start centered on 2nd
 
-      function render() {
-        // 让 current 在 0..(n-1) 之间循环
-        const n = cards.length;
-        const left  = (current - 1 + n) % n;
-        const center= current;
-        const right = (current + 1) % n;
+    function render() {
+      const n = cards.length;
+      const left   = (current - 1 + n) % n;
+      const center = current;
+      const right  = (current + 1) % n;
 
-        cards.forEach((c, i) => {
-          c.classList.remove('is-left','is-center','is-right');
-          if (i === left)   c.classList.add('is-left');
-          else if (i === center) c.classList.add('is-center');
-          else if (i === right)  c.classList.add('is-right');
-          else c.style.display = 'none'; // 只显示三张，若以后扩展可移除此行
-        });
-
-        // 播放中间视频，暂停其他
-        cards.forEach((c,i)=>{
-          const v = c.querySelector('video');
-          if (!v) return;
-          if (i === center) { v.play().catch(()=>{}); }
-          else { v.pause(); v.currentTime = 0; }
-        });
-
-        dots.forEach((d,i)=> d.setAttribute('aria-current', i===center ? 'true':'false'));
-      }
-
-      // 点击圆点切换
-      dots.forEach(dot=>{
-        dot.addEventListener('click', e=>{
-          current = Number(dot.dataset.go);
-          render();
-        });
+      cards.forEach((c, i) => {
+        c.classList.remove('is-left','is-center','is-right','is-away');
+        if      (i === left)   c.classList.add('is-left');
+        else if (i === center) c.classList.add('is-center');
+        else if (i === right)  c.classList.add('is-right');
+        else                   c.classList.add('is-away');
+        c.style.display = '';
       });
 
-      render();
-    })();
-  </script>
+      cards.forEach((c,i)=>{
+        const v = c.querySelector('video');
+        if (!v) return;
+        if (i === center) { v.play().catch(()=>{}); }
+        else { v.pause(); v.currentTime = 0; }
+      });
 
-  <section class="section">
-    <p class="lang en"> <b>Fine-tuning the Video Generation Model</b>: First, we fine-tune the video generation model on the Open-X dataset to adapt its generative capability to robotic operation scenarios. The model takes images and text instructions as input and generates future action videos corresponding to the text instructions. The generation results of the fine-tuned model on the test set are as follows:</p>
-    <p class="lang zh"> <b>微调视频生成模型</b>： 首先，我们在 Open-X 数据集上微调视频生成模型，将其生成能力适配至机器人作业场景。 模型接收图像及文本指令，生成与文本指令对应的未来动作视频。微调模型在测试集上的生成效果如下：</p>
-  </section>
-
-  <!-- 4x4 Image Grid -->
-  <section class="image-grid">
-    <img src="assets/gifs/open-x/0.gif" alt="Open-X 0">
-    <img src="assets/gifs/open-x/1.gif" alt="Open-X 1">
-    <img src="assets/gifs/open-x/2.gif" alt="Open-X 2">
-    <img src="assets/gifs/open-x/3.gif" alt="Open-X 3">
-    <img src="assets/gifs/open-x/4.gif" alt="Open-X 4">
-    <img src="assets/gifs/open-x/5.gif" alt="Open-X 5">
-    <img src="assets/gifs/open-x/6.gif" alt="Open-X 6">
-    <img src="assets/gifs/open-x/7.gif" alt="Open-X 7">
-    <img src="assets/gifs/open-x/8.gif" alt="Open-X 8">
-    <img src="assets/gifs/open-x/9.gif" alt="Open-X 9">
-    <img src="assets/gifs/open-x/10.gif" alt="Open-X 10">
-    <img src="assets/gifs/open-x/11.gif" alt="Open-X 11">
-    <img src="assets/gifs/open-x/12.gif" alt="Open-X 12">
-    <img src="assets/gifs/open-x/13.gif" alt="Open-X 13">
-    <img src="assets/gifs/open-x/14.gif" alt="Open-X 14">
-    <img src="assets/gifs/open-x/15.gif" alt="Open-X 15">
-  </section>
-
-  <section class="section">
-    <p class="lang en"> <b>UnifoLM-WMA-0</b> Architecture: We propose a world-model–embedded policy architecture. This framework enables the world model to operate in two modes: (1) <b>Decision-Making Mode</b>: Provides predictive information to assist the policy in generating actions. (2) <b>Simulation Mode</b>: Generates high-fidelity environmental feedback based on robot actions. The complete system architecture is shown as follows: </p>
-    <p class="lang zh"> <b>UnifoLM-WMA-0</b> 架构：我们提出了一种世界模型嵌入式策略架构。该方案使世界模型支持双模式运行：(1) <b>决策模式</b>：提供预测信息辅助策略生成动作；(2) <b>仿真模式</b>：基于机器人动作生成高保真环境反馈。完整系统架构如下所示： </p>
-  </section>
-
-  <!-- Video Section -->
-  <section class="section">
-    <div class="video-container">
-      <video autoplay muted loop playsinline preload="auto">
-        <source src="assets/videos/UnifoLM_WMA_0.mp4" type="video/mp4">
-      </video>
-    </div>
-  </section>
-
-  <script>
-    let currentLang = "en"; // default English
-    function toggleLanguage() {
-      const enTexts = document.querySelectorAll('.lang.en');
-      const zhTexts = document.querySelectorAll('.lang.zh');
-      if (currentLang === "en") {
-        enTexts.forEach(el => el.style.display = "none");
-        zhTexts.forEach(el => el.style.display = "block");
-        currentLang = "zh";
-      } else {
-        zhTexts.forEach(el => el.style.display = "none");
-        enTexts.forEach(el => el.style.display = "block");
-        currentLang = "en";
-      }
+      dots.forEach((d,i)=> d.setAttribute('aria-current', i===center ? 'true':'false'));
     }
-  </script>
 
+    dots.forEach(dot=>{
+      dot.addEventListener('click', (e)=>{
+        const idx = Number(e.currentTarget.dataset.go);
+        if (!Number.isNaN(idx)) {
+          current = idx;
+          render();
+        }
+      });
+    });
+
+    render();
+  })();
+
+  let currentLang = "en";
+  function toggleLanguage() {
+    const enTexts = document.querySelectorAll('.lang.en');
+    const zhTexts = document.querySelectorAll('.lang.zh');
+    if (currentLang === "en") {
+      enTexts.forEach(el => el.style.display = "none");
+      zhTexts.forEach(el => el.style.display = "block");
+      currentLang = "zh";
+    } else {
+      zhTexts.forEach(el => el.style.display = "none");
+      enTexts.forEach(el => el.style.display = "block");
+      currentLang = "en";
+    }
+  }
+  </script>
 </body>
 </html>
