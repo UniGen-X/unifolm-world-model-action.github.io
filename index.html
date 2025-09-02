@@ -31,7 +31,7 @@
         box-shadow: 0 10px 30px rgba(0,0,0,.35);
         border: 0.5px solid transparent;
     }
-    .card.caption{
+    .card > .caption{
         position: absolute;
         left: 50%;
         bottom: 8px;
@@ -41,7 +41,9 @@
         color: #fff;
         background: rgba(0,0,0,.5);
         border-radius: 4px;
-        pointer-events: none; /* keep clicks going to the video */
+        pointer-events: none;
+        margin: 0;          /* prevent the later .caption rule from adding margins */
+        z-index: 1;         /* sit above the video */
     }
     .card video{
         width: 100%;
