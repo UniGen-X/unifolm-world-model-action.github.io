@@ -5,6 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UnifoLM-WMA-0: A World-Model-Action(WMA) Framework under UnifoLM Family</title>
   <style>
+    :root{
+        --dot: #6b7280;      /* 未选中圆点 */
+        --dot-active:#4f73ff;/* 选中圆点 */
+        --bg:#0b0b0d;
+        --border:#4461ff;
+    }
+    .carousel{
+        max-width: 1040px;
+        margin: 6vh auto;
+        padding: 0 16px;
+        perspective: 1200px; /* 给两侧一点3D倾斜感 */
+    }
+    .track{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        align-items: center;
+    }
+
+    .card{
+        position: relative;
+        aspect-ratio: 16 / 9;
+        border-radius: 18px;
+        overflow: hidden;
+        transition: transform .4s ease, filter .4s ease, opacity .4s ease, box-shadow .4s ease, border-color .4s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,.35);
+        border: 2px solid transparent;
+    }
+    .card video{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    /* 中间高亮，左右变暗并略微倾斜 */
+    .card.is-center{
+        transform: translateZ(0) scale(1.02);
+        filter: brightness(1);
+        opacity: 1;
+        border-color: var(--border);
+    }
+    .card.is-left{
+        transform: rotateY(12deg) scale(.94);
+        filter: brightness(.55);
+        opacity: .7;
+    }
+    .card.is-right{
+        transform: rotateY(-12deg) scale(.94);
+        filter: brightness(.55);
+        opacity: .7;
+    }
+    /* 底部文案与圆点 */
+    .caption{
+        text-align:center;
+        margin: 22px 0 10px;
+    }
+    .dots{
+        display:flex;
+        justify-content:center;
+        gap:12px;
+        margin-top:8px;
+    }
+    .dot{
+        width:10px;height:10px;border-radius:999px;
+        background: var(--dot);
+        cursor:pointer;
+        transition: transform .2s ease, background .2s ease, width .2s ease;
+    }
+    .dot[aria-current="true"]{
+        background: var(--dot-active);
+        width: 28px;          /* 选中态做成小胶囊 */
+        border-radius: 999px;
+    }
+    /* 响应式：窄屏时竖排显示但仍突出中间 */
+    @media (max-width: 860px){
+        .track{grid-template-columns: 1fr; gap: 14px;}
+        .card.is-left,.card.is-right{
+          transform: scale(.94);
+        }
+    }
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -173,6 +253,74 @@
     <p class="lang en"> <b>UnifoLM-WMA-0</b> is Unitree‘s first open-source world-model–action architecture spanning multiple types of robotic embodiments, designed specifically for general-purpose robot learning. Its core component is a world-model capable of understanding the physical interactions between robots and their environments. This world-model provides two key functions: (a) <b>Simulation Engine</b> – operates as an interactive simulator to generate synthetic data for robot learning; (b) <b>Policy Enhancement</b> – connects with an action head and, by predicting future interaction processes with the world-model, further optimizes decision-making performance.</p>
     <p class="lang zh"> <b>UnifoLM-WMA-0</b> 是宇树科技首个跨多类机器人本体的开源世界模型动作架构，专为通用机器人学习而设计。其核心成分在于一个可以理解机器人与环境交互物理规律的世界模型。该世界模型具备两大核心功能：（1）<b>仿真引擎</b>，作为交互式仿真器运行，为机器人学习生成合成数据;（2）<b>策略增强</b>，可与一个动作头进行对接，通过预测未来与物理世界的交互过程，进一步优化决策性能。</p>
   </section>
+
+  <div class="track" id="track">
+    <div class="card is-left"   data-index="0">
+        <video src="assets/videos/real_z1_stackbox.MP4" muted loop playsinline></video>
+    </div>
+    <div class="card is-center" data-index="1">
+        <video src="assets/videos/real_dual_stackbox.mp4" muted autoplay loop playsinline></video>
+    </div>
+    <div class="card is-right"  data-index="2">
+        <video src="assets/videos/real_cleanup_pencils.MP4" muted loop playsinline></video>
+    </div>
+    <div class="card"           data-index="3">
+        <video src="assets/videos/real_g1_pack_camera.mp4" muted loop playsinline></video>
+    </div>
+  </div>
+
+  <div class="dots" id="dots" role="tablist" aria-label="video pagination">
+      <button class="dot" aria-label="Video 1" aria-current="false" data-go="0"></button>
+      <button class="dot" aria-label="Video 2" aria-current="false"  data-go="1"></button>
+      <button class="dot" aria-label="Video 3" aria-current="true" data-go="2"></button>
+      <button class="dot" aria-label="Video 4" aria-current="false" data-go="3"></button>
+  </div>
+  <script>
+    (() => {
+      const track = document.getElementById('track');
+      const cards = [...track.querySelectorAll('.card')];
+      const dots  = [...document.querySelectorAll('.dot')];
+
+      // 当前高亮索引（始终让它显示在中间位置）
+      let current = 1; // 初始为中间
+
+      function render() {
+        // 让 current 在 0..(n-1) 之间循环
+        const n = cards.length;
+        const left  = (current - 1 + n) % n;
+        const center= current;
+        const right = (current + 1) % n;
+
+        cards.forEach((c, i) => {
+          c.classList.remove('is-left','is-center','is-right');
+          if (i === left)   c.classList.add('is-left');
+          else if (i === center) c.classList.add('is-center');
+          else if (i === right)  c.classList.add('is-right');
+          else c.style.display = 'none'; // 只显示三张，若以后扩展可移除此行
+        });
+
+        // 播放中间视频，暂停其他
+        cards.forEach((c,i)=>{
+          const v = c.querySelector('video');
+          if (!v) return;
+          if (i === center) { v.play().catch(()=>{}); }
+          else { v.pause(); v.currentTime = 0; }
+        });
+
+        dots.forEach((d,i)=> d.setAttribute('aria-current', i===center ? 'true':'false'));
+      }
+
+      // 点击圆点切换
+      dots.forEach(dot=>{
+        dot.addEventListener('click', e=>{
+          current = Number(dot.dataset.go);
+          render();
+        });
+      });
+
+      render();
+    })();
+  </script>
 
   <section class="section">
     <p class="lang en"> <b>Fine-tuning the Video Generation Model</b>: First, we fine-tune the video generation model on the Open-X dataset to adapt its generative capability to robotic operation scenarios. The model takes images and text instructions as input and generates future action videos corresponding to the text instructions. The generation results of the fine-tuned model on the test set are as follows:</p>
