@@ -9,6 +9,8 @@
         --dot: transparent;
         --dot-border:#000;
         --center-scale:1.5;
+        --tile-max: 230px;  /* desired full size */
+        --tile-min: 140px;
     }
     .carousel{
         max-width: 1040px;
@@ -170,11 +172,13 @@
     /* 4x4 grid */
     .image-grid {
       display: grid;
-      grid-template-columns: repeat(4, 210px);
+      grid-template-columns: repeat(auto-fit, minmax(var(--tile-min), 1fr));
       justify-content: center;
       align-items: center;
       gap: 5px;
       padding: 1rem;
+      max-width: calc(4 * var(--tile-max) + 3 * 8px);
+      margin-inline: auto;
     }
 
     .image-grid img,
