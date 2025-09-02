@@ -324,32 +324,40 @@
           "Stack the blocks in the rectangular block: red at the bottom, yellow in the middle, green on top.",
         ],
         zh: [
-          "Z1——叠箱（单臂）",
-          "G1——相机装箱（双臂操作）",
-          "G1——清理铅笔（桌面整理）",
-          "G1——双臂叠箱（协同抬举）"
+          "将木块以红黄蓝的顺序叠落。",
+          "将黑色的相机放入包装盒。",
+          "整理橡皮和笔。",
+          "将木块以红黄蓝的顺序叠落。",
         ]
       };
 
       let current = 1; // start with 2nd video centered
 
       function render(){
-        const left   = (current - 1 + n) % n;
+        const left   = current > 0     ? current - 1 : null;
         const center = current;
-        const right  = (current + 1) % n;
+        const right  = current < n - 1 ? current + 1 : null;
 
         cards.forEach((c,i)=>{
+          // reset grid placement & classes
           c.classList.remove('is-left','is-center','is-right');
-          // only show three
-          if (i===left || i===center || i===right){
-            c.style.display = '';
-            c.classList.add(i===left ? 'is-left' : i===center ? 'is-center' : 'is-right');
-            // place them visually as 1,2,3 in the row
-            c.style.order = (i===left) ? 1 : (i===center) ? 2 : 3;
-          } else {
-            c.style.display = 'none';
-          }
+          c.style.gridColumn = '';
+          c.style.display = 'none';
         });
+
+        // helper to place a card in a given column (1|2|3) & class
+        const place = (idx, col, cls) => {
+          if (idx === null) return;
+          const c = cards[idx];
+          c.style.display = '';
+          c.style.gridColumn = String(col); // (1, 2, or 3)
+          c.classList.add(cls);
+        };
+
+        // place visible neighbors explicitly into the 3 columns
+        place(left,   1, 'is-left');
+        place(center, 2, 'is-center');
+        place(right,  3, 'is-right');
 
         // play center, pause others
         cards.forEach((c,i)=>{
@@ -358,44 +366,23 @@
           else { v.pause(); v.currentTime = 0; }
         });
 
+        // dots & captions
         dots.forEach((d,i)=> d.setAttribute('aria-current', i===center ? 'true' : 'false'));
-        
-        // NEW: update captions
-        capEn.textContent = captions.en[center] || "";
-        capZh.textContent = captions.zh[center] || "";
+        if (capEn) capEn.textContent = captions.en[center] || "";
+        if (capZh) capZh.textContent = captions.zh[center] || "";
       }
-
-      // move one step (dir = +1 forward, -1 backward)
-      function step(dir){
-        current = (current + dir + n) % n;
-        render();
-      }
-
-      // roll to target index through intermediate items (circular)
+      // clamp to [0, n-1] — no rolling animation, no wrap
       function goTo(target){
-        target = ((target % n) + n) % n;
-        if (target === current) return;
-
-        const forward  = (target - current + n) % n; // steps if moving +1
-        const backward = (current - target + n) % n; // steps if moving -1
-        const dir = (forward <= backward) ? +1 : -1;
-        const steps = (dir === 1) ? forward : backward;
-
-        let i = 0;
-        const tick = () => {
-          if (i >= steps) return;
-          step(dir);
-          i += 1;
-          setTimeout(tick, 220); // controls roll speed
-        };
-        tick();
+        const t = Math.max(0, Math.min(n-1, Number(target)));
+        if (!Number.isNaN(t)) {
+          current = t;
+          render();
+        }
       }
 
-      // dots click -> roll to that video
       dots.forEach(dot=>{
         dot.addEventListener('click', e=>{
-          const idx = Number(e.currentTarget.dataset.go);
-          if (!Number.isNaN(idx)) goTo(idx);
+          goTo(e.currentTarget.dataset.go);
         });
       });
 
