@@ -6,10 +6,8 @@
   <title>UnifoLM-WMA-0: A World-Model-Action(WMA) Framework under UnifoLM Family</title>
   <style>
     :root{
-        --dot: #6b7280;      /* 未选中圆点 */
-        --dot-active:#4f73ff;/* 选中圆点 */
-        --bg:#0b0b0d;
-        --border:#4461ff;
+        --dot: transparent;      /* 未选中圆点 */
+        --dot-border:#000;
     }
     .carousel{
         max-width: 1040px;
@@ -31,7 +29,7 @@
         overflow: hidden;
         transition: transform .4s ease, filter .4s ease, opacity .4s ease, box-shadow .4s ease, border-color .4s ease;
         box-shadow: 0 10px 30px rgba(0,0,0,.35);
-        border: 2px solid transparent;
+        border: 1px solid transparent;
     }
     .card video{
         width: 100%;
@@ -56,6 +54,11 @@
         filter: brightness(.55);
         opacity: .7;
     }
+    .card.is-away{
+        transform: scale(.9);
+        filter: brightness(.4);
+        opacity: .55;
+    }
     /* 底部文案与圆点 */
     .caption{
         text-align:center;
@@ -68,15 +71,19 @@
         margin-top:8px;
     }
     .dot{
-        width:10px;height:10px;border-radius:999px;
-        background: var(--dot);
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background: transparent;
+        border: 2px solid var(--dot-border);
         cursor:pointer;
         transition: transform .2s ease, background .2s ease, width .2s ease;
     }
     .dot[aria-current="true"]{
-        background: var(--dot-active);
-        width: 28px;          /* 选中态做成小胶囊 */
+        width: 34px;
         border-radius: 999px;
+        background: linear-gradient(90deg, #38bdf8 0%, #93c5fd 100%);
+        border: 1px solid #60a5fa;
     }
     /* 响应式：窄屏时竖排显示但仍突出中间 */
     @media (max-width: 860px){
@@ -269,58 +276,74 @@
     </div>
   </div>
 
-  <div class="dots" id="dots" role="tablist" aria-label="video pagination">
+  <div class="dots" id="dots">
       <button class="dot" aria-label="Video 1" aria-current="false" data-go="0"></button>
       <button class="dot" aria-label="Video 2" aria-current="false"  data-go="1"></button>
-      <button class="dot" aria-label="Video 3" aria-current="true" data-go="2"></button>
+      <button class="dot" aria-label="Video 3" aria-current="false" data-go="2"></button>
       <button class="dot" aria-label="Video 4" aria-current="false" data-go="3"></button>
   </div>
   <script>
-    (() => {
-      const track = document.getElementById('track');
-      const cards = [...track.querySelectorAll('.card')];
-      const dots  = [...document.querySelectorAll('.dot')];
+      (() => {
+        const track = document.getElementById('track');
+        const cards = [...track.querySelectorAll('.card')];
+        const dots  = [...document.querySelectorAll('.dot')];
 
-      // 当前高亮索引（始终让它显示在中间位置）
-      let current = 1; // 初始为中间
+        let current = 1; // start centered on 2nd
 
-      function render() {
-        // 让 current 在 0..(n-1) 之间循环
-        const n = cards.length;
-        const left  = (current - 1 + n) % n;
-        const center= current;
-        const right = (current + 1) % n;
+        function render() {
+          const n = cards.length;
+          const left   = (current - 1 + n) % n;
+          const center = current;
+          const right  = (current + 1) % n;
 
-        cards.forEach((c, i) => {
-          c.classList.remove('is-left','is-center','is-right');
-          if (i === left)   c.classList.add('is-left');
-          else if (i === center) c.classList.add('is-center');
-          else if (i === right)  c.classList.add('is-right');
-          else c.style.display = 'none'; // 只显示三张，若以后扩展可移除此行
+          cards.forEach((c, i) => {
+            c.classList.remove('is-left','is-center','is-right','is-away');
+            if      (i === left)   c.classList.add('is-left');
+            else if (i === center) c.classList.add('is-center');
+            else if (i === right)  c.classList.add('is-right');
+            else                   c.classList.add('is-away');
+            c.style.display = '';
+          });
+
+          cards.forEach((c,i)=>{
+            const v = c.querySelector('video');
+            if (!v) return;
+            if (i === center) { v.play().catch(()=>{}); }
+            else { v.pause(); v.currentTime = 0; }
+          });
+
+          dots.forEach((d,i)=> d.setAttribute('aria-current', i===center ? 'true':'false'));
+        }
+
+        dots.forEach(dot=>{
+          dot.addEventListener('click', (e)=>{
+            const idx = Number(e.currentTarget.dataset.go);
+            if (!Number.isNaN(idx)) {
+              current = idx;
+              render();
+            }
+          });
         });
 
-        // 播放中间视频，暂停其他
-        cards.forEach((c,i)=>{
-          const v = c.querySelector('video');
-          if (!v) return;
-          if (i === center) { v.play().catch(()=>{}); }
-          else { v.pause(); v.currentTime = 0; }
-        });
+        render();
+      })();
 
-        dots.forEach((d,i)=> d.setAttribute('aria-current', i===center ? 'true':'false'));
+      let currentLang = "en";
+      function toggleLanguage() {
+        const enTexts = document.querySelectorAll('.lang.en');
+        const zhTexts = document.querySelectorAll('.lang.zh');
+        if (currentLang === "en") {
+          enTexts.forEach(el => el.style.display = "none");
+          zhTexts.forEach(el => el.style.display = "block");
+          currentLang = "zh";
+        } else {
+          zhTexts.forEach(el => el.style.display = "none");
+          enTexts.forEach(el => el.style.display = "block");
+          currentLang = "en";
+        }
       }
-
-      // 点击圆点切换
-      dots.forEach(dot=>{
-        dot.addEventListener('click', e=>{
-          current = Number(dot.dataset.go);
-          render();
-        });
-      });
-
-      render();
-    })();
   </script>
+
 
   <section class="section">
     <p class="lang en"> <b>Fine-tuning the Video Generation Model</b>: First, we fine-tune the video generation model on the Open-X dataset to adapt its generative capability to robotic operation scenarios. The model takes images and text instructions as input and generates future action videos corresponding to the text instructions. The generation results of the fine-tuned model on the test set are as follows:</p>
