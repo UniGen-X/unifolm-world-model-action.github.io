@@ -243,6 +243,11 @@
       margin: 40px auto 80px;
       padding: 0 16px;
     }
+    .pair-stage {
+      position: relative;
+      width: min(100%, 800px);  /* SAME width as your grid before */
+      margin: 0 auto;           /* center */
+    }
     #pair-grid {
       max-width: 800px;   /* shrink overall gallery width */
       margin: 0 auto;     /* center horizontally */
@@ -507,21 +512,17 @@
     <div class="pair-grid" id="pair-grid">
         <video src="assets/videos/gen_long_term/ori_z1_stackbox.mp4" muted loop playsinline autoplay controls></video>
         <video src="assets/videos/gen_long_term/gen_z1_stackbox.mp4" muted loop playsinline autoplay controls></video>
+        <!-- side buttons -->
+        <div class="pair-controls" aria-hidden="false">
+          <button class="nav-btn nav-left"  id="pair-prev" aria-label="Previous group">
+            &#9664;
+          </button>
+          <button class="nav-btn nav-right" id="pair-next" aria-label="Next group">
+            &#9654;
+          </button>
+        </div>
     </div>
 
-    <!-- side buttons -->
-    <div class="pair-controls" aria-hidden="false">
-      <button class="nav-btn nav-left"  id="pair-prev" aria-label="Previous group">
-        &#9664;
-      </button>
-      <button class="nav-btn nav-right" id="pair-next" aria-label="Next group">
-        &#9654;
-      </button>
-    </div>
-    <!-- optional tiny indicator -->
-    <div style="text-align:center; color:#888; font-size:.85rem; margin-top:10px;">
-      <span id="pair-indicator">Group 1 / 5</span>
-    </div>
   </section>
 
   <script>
@@ -593,8 +594,6 @@
         prevBtn.hidden = (idx === 0);
         nextBtn.hidden = (idx === pairs.length - 1);
 
-        // indicator text
-        if (indicator) indicator.textContent = `Group ${idx+1} / ${pairs.length}`;
       }
 
       prevBtn.addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
