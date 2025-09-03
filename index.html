@@ -243,20 +243,20 @@
       margin: 40px auto 80px;
       padding: 0 16px;
     }
+
+    /* NEW: stage whose width == grid width; buttons are anchored to this */
     .pair-stage {
       position: relative;
       width: min(100%, 800px);  /* SAME width as your grid before */
       margin: 0 auto;           /* center */
     }
-    #pair-grid {
-      max-width: 800px;   /* shrink overall gallery width */
-      margin: 0 auto;     /* center horizontally */
-    }
+
     .pair-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
+
     .pair-card {
       position: relative;
       aspect-ratio: 4 / 3;
@@ -271,9 +271,15 @@
       object-fit: cover;
       display: block;
     }
+
+    /* Controls overlay the exact area of .pair-stage (i.e., the two videos) */
     .pair-controls {
-      pointer-events: none; /* container ignores clicks so only buttons get them */
+      position: absolute;
+      inset: 0;                 /* stretch over the stage */
+      pointer-events: none;     /* container ignores clicks */
     }
+
+    /* Buttons receive clicks; vertically centered; centers sit on edges */
     .nav-btn {
       pointer-events: auto;
       position: absolute;
@@ -292,13 +298,17 @@
       opacity: 0.9;
     }
     .nav-btn:hover { background: rgba(0,0,0,.75); }
-    .nav-left  { left: -22px; }
-    .nav-right { right: -22px; }
     .nav-btn[hidden] { display: none; }
 
+    /* Key bit: align to the stage’s edges and shift by 50% of button width */
+    .nav-left  { left: 0;  transform: translate(-50%, -50%); } /* center on left edge */
+    .nav-right { right: 0; transform: translate( 50%, -50%); } /* center on right edge */
+
+    /* One-column fallback keeps the same behavior */
     @media (max-width: 400px){
       .pair-grid { grid-template-columns: 1fr; }
     }
+
   </style>
 </head>
 <body>
