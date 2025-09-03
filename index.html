@@ -275,6 +275,23 @@
       height: 100%;
       pointer-events: none; /* container ignores clicks so only buttons get them */
     }
+
+    .pair-captions{
+      max-width: 800px;          /* same width as #pair-grid */
+      margin: 10px auto 0;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .pair-cap p{
+      color: #666;               /* match .section p */
+      font-size: 0.9rem;         /* match .section p */
+      margin: 0.25rem 0 0;
+      text-align: justify;
+    }
+
     .nav-btn {
       pointer-events: auto;
       position: absolute;
@@ -514,6 +531,16 @@
         <video src="assets/videos/gen_long_term/ori_z1_stackbox.mp4" muted loop playsinline autoplay controls></video>
         <video src="assets/videos/gen_long_term/gen_z1_stackbox.mp4" muted loop playsinline autoplay controls></video>
     </div>
+    <div class="pair-captions" id="pair-captions" role="status" aria-live="polite">
+        <div class="pair-cap left">
+            <p class="lang en" id="pair-cap-left-en"></p>
+            <p class="lang zh" id="pair-cap-left-zh" style="display:none"></p>
+        </div>
+        <div class="pair-cap right">
+            <p class="lang en" id="pair-cap-right-en"></p>
+            <p class="lang zh" id="pair-cap-right-zh" style="display:none"></p>
+        </div>
+    </div>
     <!-- side buttons -->
     <div class="pair-controls" aria-hidden="false">
       <button class="nav-btn nav-left"  id="pair-prev" aria-label="Previous group">
@@ -549,11 +576,31 @@
         ["assets/videos/gen_long_term/ori_z1_stackbox.mp4",  "assets/videos/gen_long_term/gen_z1_stackbox.mp4"],
         ["assets/videos/gen_long_term/ori_z1_stackbox.mp4",  "assets/videos/gen_long_term/gen_z1_stackbox.mp4"],
       ];
+// 2) Per-group, per-side captions (same length & order as `pairs`)
+      const pairCaptions = {
+        en: [
+          { left: "Original",
+            right:"Generated" },
+          { left: "Original",
+            right:"Generated" }
+        ],
+        zh: [
+          { left: "原视频",
+            right:"生成结果" },
+          { left: "原视频",
+            right:"生成结果" }
+        ]
+      };
 
       const grid = document.getElementById('pair-grid');
       const prevBtn = document.getElementById('pair-prev');
       const nextBtn = document.getElementById('pair-next');
-      const indicator = document.getElementById('pair-indicator');
+
+    // Caption elements (make sure these exist in your HTML)
+      const capLeftEn   = document.getElementById("pair-cap-left-en");
+      const capLeftZh   = document.getElementById("pair-cap-left-zh");
+      const capRightEn  = document.getElementById("pair-cap-right-en");
+      const capRightZh  = document.getElementById("pair-cap-right-zh");
 
       let idx = 0; // start at first group
 
@@ -589,6 +636,8 @@
         // attempt to play both (browsers may block, but muted usually OK)
         left.v.play().catch(()=>{});
         right.v.play().catch(()=>{});
+
+        setCaptions(idx);
 
         // show/hide arrows
         prevBtn.hidden = (idx === 0);
