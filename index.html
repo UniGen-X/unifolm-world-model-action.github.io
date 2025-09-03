@@ -243,66 +243,41 @@
       margin: 40px auto 80px;
       padding: 0 16px;
     }
-
-    /* NEW: stage whose width == grid width; buttons are anchored to this */
     .pair-stage {
       position: relative;
-      width: min(100%, 800px);  /* SAME width as your grid before */
-      margin: 0 auto;           /* center */
+      width: min(100%, 800px);
+      margin: 0 auto;
+      overflow: visible;              /* ensure edges aren't clipped */
     }
 
     .pair-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    .pair-card {
       position: relative;
-      aspect-ratio: 4 / 3;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,.25);
-      background: #000;
-    }
-    .pair-card video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+      z-index: 1;                     /* grid below controls */
     }
 
-    /* Controls overlay the exact area of .pair-stage (i.e., the two videos) */
     .pair-controls {
       position: absolute;
-      inset: 0;                 /* stretch over the stage */
-      pointer-events: none;     /* container ignores clicks */
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;                     /* controls above videos */
+      transform: translateZ(0);       /* iOS/Safari: force proper stacking */
     }
 
-    /* Buttons receive clicks; vertically centered; centers sit on edges */
     .nav-btn {
       pointer-events: auto;
       position: absolute;
       top: 50%;
-      transform: translateY(-50%);
-      border: none;
-      background: rgba(0,0,0,.55);
-      color: #fff;
-      width: 44px;
-      height: 44px;
+      width: 44px; height: 44px;
       border-radius: 999px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      transition: background .2s ease, opacity .2s ease;
-      opacity: 0.9;
+      display: grid; place-items: center;
+      border: none; color:#fff; background: rgba(0,0,0,.55);
+      transform: translateY(-50%);
+      z-index: 4;                     /* button above everything */
     }
-    .nav-btn:hover { background: rgba(0,0,0,.75); }
-    .nav-btn[hidden] { display: none; }
 
-    /* Key bit: align to the stage’s edges and shift by 50% of button width */
-    .nav-left  { left: 0;  transform: translate(-50%, -50%); } /* center on left edge */
-    .nav-right { right: 0; transform: translate( 50%, -50%); } /* center on right edge */
+    /* Keep the button centers exactly on the stage edges */
+    .nav-left  { left: 0;  transform: translate(-50%, -50%); }
+    .nav-right { right: 0; transform: translate( 50%, -50%); }
 
     /* One-column fallback keeps the same behavior */
     @media (max-width: 400px){
