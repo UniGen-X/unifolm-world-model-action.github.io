@@ -620,6 +620,15 @@
       function pauseAll(){
         grid.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; });
       }
+      function setCaptions(i) {
+        const en = pairCaptions.en[i] || {};
+        const zh = pairCaptions.zh[i] || {};
+
+        if (capLeftEn)  capLeftEn.textContent  = en.left  || "";
+        if (capRightEn) capRightEn.textContent = en.right || "";
+        if (capLeftZh)  capLeftZh.textContent  = zh.left  || "";
+        if (capRightZh) capRightZh.textContent = zh.right || "";
+      }
 
       function render(){
         // clear existing
