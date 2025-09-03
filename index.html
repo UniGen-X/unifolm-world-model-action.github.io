@@ -51,11 +51,17 @@
         transform: rotateY(12deg) scale(.7);
         filter: brightness(.55);
         opacity: .7;
+        cursor: pointer;
     }
     .card.is-right{
         transform: rotateY(-12deg) scale(.7);
         filter: brightness(.55);
         opacity: .7;
+        cursor: pointer;
+    }
+    .card:focus-visible{
+        outline: 2px solid #888;
+        outline-offset: 2px;
     }
     /* 底部文案与圆点 */
     .caption{
@@ -459,6 +465,25 @@
       const capEn = document.getElementById('cap-en');
       const capZh = document.getElementById('cap-zh');
 
+      cards.forEach((card, i) => {
+        // Make each card operable
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `Show video ${i+1} in center`);
+
+        // Click to center
+        card.addEventListener('click', () => activate(i));
+
+        // Enter/Space to center
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                activate(i);
+            }
+        });
+      });
+
+
       const captions = {
         en: [
           "Stack the blocks in the rectangular block: red at the bottom, yellow in the middle, green on top.",
@@ -475,6 +500,17 @@
       };
 
       let current = 1; // start with 2nd video centered
+
+      function activate(i){
+        if (i !== current) {
+            current = i;
+            render();
+        } else {
+            // already centered — just play
+            const v = cards[i].querySelector('video');
+            v && v.play().catch(()=>{});
+        }
+      }
 
       function render(){
         const left   = current > 0     ? current - 1 : null;
@@ -513,6 +549,16 @@
         dots.forEach((d,i)=> d.setAttribute('aria-current', i===center ? 'true' : 'false'));
         if (capEn) capEn.textContent = captions.en[center] || "";
         if (capZh) capZh.textContent = captions.zh[center] || "";
+      }
+      function activate(i){
+        if (i !== current) {
+            current = i;
+            render();
+        } else {
+            // already centered—just ensure it plays
+            const v = cards[i].querySelector('video');
+            v && v.play().catch(()=>{});
+        }
       }
       // clamp to [0, n-1] — no rolling animation, no wrap
       function goTo(target){
