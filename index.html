@@ -267,6 +267,12 @@
       display: block;
     }
     .pair-controls {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);  /* center the overlay */
+      width: min(800px, 100%);      /* same as #pair-grid max width */
+      height: 100%;
       pointer-events: none; /* container ignores clicks so only buttons get them */
     }
     .nav-btn {
@@ -287,8 +293,8 @@
       opacity: 0.9;
     }
     .nav-btn:hover { background: rgba(0,0,0,.75); }
-    .nav-left  { left: 0px; }
-    .nav-right { right: 0px; }
+    .nav-left  { left: 0; transform: translate(-50%, -50%); }
+    .nav-right { right: 0; transform: translate(-50%, -50%); }
     .nav-btn[hidden] { display: none; }
 
     @media (max-width: 400px){
@@ -517,7 +523,6 @@
         &#9654;
       </button>
     </div>
-
   </section>
 
   <script>
