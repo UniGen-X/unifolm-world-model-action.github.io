@@ -236,6 +236,60 @@
     .lang.en {
       display: block;
     }
+
+    .pair-gallery {
+      position: relative;
+      max-width: 1040px;
+      margin: 40px auto 80px;
+      padding: 0 16px;
+    }
+    .pair-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .pair-card {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+      background: #000;
+    }
+    .pair-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .pair-controls {
+      pointer-events: none; /* container ignores clicks so only buttons get them */
+    }
+    .nav-btn {
+      pointer-events: auto;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .2s ease, opacity .2s ease;
+      opacity: 0.9;
+    }
+    .nav-btn:hover { background: rgba(0,0,0,.75); }
+    .nav-left  { left: 0; }
+    .nav-right { right: 0; }
+    .nav-btn[hidden] { display: none; }
+
+    @media (max-width: 860px){
+      .pair-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -445,6 +499,27 @@
     <p class="lang zh"> <b>UnifoLM-WMA-0</b> 持续交互生成：我们的世界模型也有能力实现长程任务的持续交互生成，生成结果与原视频对比如下所示:</p>
   </section>
 
+  <section class="pair-gallery" aria-label="Additional Results (2 per group)">
+    <div class="pair-grid" id="pair-grid">
+        <video src="assets/videos/gen_long_term/ori_z1_stackbox.mp4" muted loop playsinline autoplay controls></video>
+        <video src="assets/videos/gen_long_term/gen_z1_stackbox.mp4" muted loop playsinline autoplay controls></video>
+    </div>
+
+    <!-- side buttons -->
+    <div class="pair-controls" aria-hidden="false">
+      <button class="nav-btn nav-left"  id="pair-prev" aria-label="Previous group">
+        &#9664;
+      </button>
+      <button class="nav-btn nav-right" id="pair-next" aria-label="Next group">
+        &#9654;
+      </button>
+    </div>
+    <!-- optional tiny indicator -->
+    <div style="text-align:center; color:#888; font-size:.85rem; margin-top:10px;">
+      <span id="pair-indicator">Group 1 / 5</span>
+    </div>
+  </section>
+
   <script>
     let currentLang = "en"; // default English
     function toggleLanguage() {
@@ -460,6 +535,75 @@
         currentLang = "en";
       }
     }
+    // =========================
+    // NEW: 2-Column Pair Gallery Logic
+    // =========================
+    (function(){
+      // TODO: replace these with your 10 video paths (5 groups × 2 videos)
+      const pairs = [
+        ["assets/videos/gen_long_term/ori_z1_stackbox.mp4",  "assets/videos/gen_long_term/gen_z1_stackbox.mp4"],
+        ["assets/videos/gen_long_term/ori_z1_stackbox.mp4",  "assets/videos/gen_long_term/gen_z1_stackbox.mp4"],
+      ];
+
+      const grid = document.getElementById('pair-grid');
+      const prevBtn = document.getElementById('pair-prev');
+      const nextBtn = document.getElementById('pair-next');
+      const indicator = document.getElementById('pair-indicator');
+
+      let idx = 0; // start at first group
+
+      function makeCard(src){
+        const wrap = document.createElement('div');
+        wrap.className = 'pair-card';
+        const v = document.createElement('video');
+        v.src = src;
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.autoplay = true; // will try; some browsers require user gesture but muted helps
+        wrap.appendChild(v);
+        return {wrap, v};
+      }
+
+      function pauseAll(){
+        grid.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; });
+      }
+
+      function render(){
+        // clear existing
+        pauseAll();
+        grid.innerHTML = '';
+
+        const [leftSrc, rightSrc] = pairs[idx];
+        const left  = makeCard(leftSrc);
+        const right = makeCard(rightSrc);
+
+        grid.appendChild(left.wrap);
+        grid.appendChild(right.wrap);
+
+        // attempt to play both (browsers may block, but muted usually OK)
+        left.v.play().catch(()=>{});
+        right.v.play().catch(()=>{});
+
+        // show/hide arrows
+        prevBtn.hidden = (idx === 0);
+        nextBtn.hidden = (idx === pairs.length - 1);
+
+        // indicator text
+        if (indicator) indicator.textContent = `Group ${idx+1} / ${pairs.length}`;
+      }
+
+      prevBtn.addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
+      nextBtn.addEventListener('click', () => { if (idx < pairs.length - 1) { idx++; render(); } });
+
+      // keyboard accessibility: ← →
+      document.addEventListener('keydown', (e)=>{
+        if (e.key === 'ArrowLeft'  && idx > 0) { idx--; render(); }
+        if (e.key === 'ArrowRight' && idx < pairs.length - 1) { idx++; render(); }
+      });
+
+      render();
+    })();
   </script>
 
 </body>
