@@ -176,22 +176,28 @@
       top: 1rem;
       right: 1rem;
       display: flex;
-      gap: 0.5rem; /* space between buttons */
-    }
-
-    /* style for the buttons */
-    .lang-toggle button {
-      cursor: pointer;
-      background: none;
-      border: 1px solid #ccc;
-      border-radius: 14px;
-      padding: 0.25rem 0.6rem;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 0.9rem;
     }
     
-    .lang-toggle button.active {
-      border-color: #0077cc;
-      font-weight: bold;
+    /* make them look like text links */
+    .lang-toggle button {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: #0077cc;
+      cursor: pointer;
+      text-decoration: underline; /* optional, remove if you want plain text */
+    }
+    
+    /* separator "|" */
+    .lang-toggle button:first-child::after {
+      content: "|";
+      margin: 0 0.5rem;
+      color: #666;
     }
 
     /* 4x4 grid */
