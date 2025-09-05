@@ -391,7 +391,8 @@
 <body>
 
   <!-- Language Switch -->
-  <button class="lang-toggle" onclick="toggleLanguage()">🌎 English | 🇨🇳 中文</button>
+  <button class="lang-toggle" onclick="toggleLanguage('en')">🌎 English</button>
+  <button class="lang-toggle" onclick="toggleLanguage('zh')">🇨🇳 中文</button>
 
   <header>
     <h1 class="lang en">UnifoLM-WMA-0: A World-Model-Action(WMA) Framework <br> under UnifoLM Family</h1>
@@ -815,18 +816,20 @@
 
   <script>
     let currentLang = "en"; // default English
-    function toggleLanguage() {
+    function toggleLanguage(target) {
+      if (!target || target === currentLang) return; // do nothing if same
       const enTexts = document.querySelectorAll('.lang.en');
       const zhTexts = document.querySelectorAll('.lang.zh');
-      if (currentLang === "en") {
-        enTexts.forEach(el => el.style.display = "none");
-        zhTexts.forEach(el => el.style.display = "block");
-        currentLang = "zh";
-      } else {
+
+      if (target === "en") {
         zhTexts.forEach(el => el.style.display = "none");
         enTexts.forEach(el => el.style.display = "block");
         currentLang = "en";
-      }
+      } else if (target === "zh") {
+        enTexts.forEach(el => el.style.display = "none");
+        zhTexts.forEach(el => el.style.display = "block");
+        currentLang = "zh";
+      }    
     }
     // =========================
     // NEW: 2-Column Pair Gallery Logic
