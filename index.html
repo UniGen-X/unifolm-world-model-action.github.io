@@ -175,11 +175,23 @@
       position: absolute;
       top: 1rem;
       right: 1rem;
+      display: flex;
+      gap: 0.5rem; /* space between buttons */
+    }
+
+    /* style for the buttons */
+    .lang-toggle button {
       cursor: pointer;
-      font-size: 1rem;
       background: none;
-      border: none;
-      color: #0077cc;
+      border: 1px solid #ccc;
+      border-radius: 14px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.9rem;
+    }
+    
+    .lang-toggle button.active {
+      border-color: #0077cc;
+      font-weight: bold;
     }
 
     /* 4x4 grid */
@@ -391,8 +403,10 @@
 <body>
 
   <!-- Language Switch -->
-  <button class="lang-toggle" onclick="toggleLanguage()">🌎 English | 🇨🇳 中文</button>
-
+  <div class="lang-toggle">
+    <button onclick="toggleLanguage('en')">🌎 English</button>
+    <button onclick="toggleLanguage('zh')">🇨🇳 中文</button>
+  </div>
   <header>
     <h1 class="lang en">UnifoLM-WMA-0: A World-Model-Action(WMA) Framework <br> under UnifoLM Family</h1>
     <h1 class="lang zh">UnifoLM-WMA-0: UnifoLM 系列下的世界模型-动作（WMA）架构</h1>
