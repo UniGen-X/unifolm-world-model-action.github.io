@@ -77,6 +77,12 @@
         font-size: 0.9rem; 
         margin: 22px 0 10px;
     }
+    .caption .note{
+        margin-top: 0.5rem;
+        color: #888;
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
     .dots{
         display:flex;
         justify-content:center;
@@ -473,6 +479,13 @@
   <div class="caption" id="caption" role="status" aria-live="polite">
     <p class="lang en" id="cap-en"></p>
     <p class="lang zh" id="cap-zh" style="display:none"></p>
+    <!-- NEW: extra note under the caption -->
+    <p class="lang en note">
+      (Note: The top-right window shows the world model’s prediction of future environmental changes.)
+    </p>
+    <p class="lang zh note" style="display:none">
+      (注：右上角小窗口显示世界模型对未来环境变化的预测。）
+    </p>
   </div>
 
   <div class="dots" id="dots" role="tablist" aria-label="video pagination">
@@ -513,7 +526,7 @@
 
       const captions = {
         en: [
-          "Stack the blocks in the rectangular block: red at the bottom, yellow in the middle, green on top. <br> The small window in the upper-right corner displays the world model’s prediction of future environmental changes.",
+          "Stack the blocks in the rectangular block: red at the bottom, yellow in the middle, green on top.",
           "Clean up the eraser and pencils.",
           "Pack black camera into box.",
           "Stack the blocks in the rectangular block: red at the bottom, yellow in the middle, green on top.",
