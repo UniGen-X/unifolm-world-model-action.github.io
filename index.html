@@ -18,7 +18,12 @@
         padding: 0 16px;
         perspective: 1200px; 
     }
-
+    .divider {
+        border: none;               /* remove browser default */
+        border-top: 1px solid #ccc; /* subtle gray line */
+        margin: 2rem auto;          /* spacing above/below */
+        max-width: 800px;           /* match .section width */
+    }
     .section + .carousel{
       margin-top: 5rem;   /* tweak to taste */
     }
