@@ -463,17 +463,17 @@
 
   <div class="carousel">
     <div class="track" id="track">
-        <div class="card" data-index="3">
-            <video src="assets/videos/real_exp/real_dual_stackbox.mp4" muted autoplay loop playsinline autoplay></video>
-        </div>
-        <div class="card" data-index="2">
-            <video src="assets/videos/real_exp/real_g1_pack_camera.mp4" muted loop playsinline autoplay></video>
+        <div class="card" data-index="0">
+            <video src="assets/videos/real_exp/real_z1_stackbox.MP4" muted loop playsinline autoplay></video>
         </div>
         <div class="card" data-index="1">
             <video src="assets/videos/real_exp/real_cleanup_pencils.MP4" muted loop playsinline autoplay></video>
         </div>
-        <div class="card" data-index="0">
-            <video src="assets/videos/real_exp/real_z1_stackbox.MP4" muted loop playsinline autoplay></video>
+        <div class="card" data-index="2">
+            <video src="assets/videos/real_exp/real_g1_pack_camera.mp4" muted loop playsinline autoplay></video>
+        </div>
+        <div class="card" data-index="3">
+            <video src="assets/videos/real_exp/real_dual_stackbox.mp4" muted autoplay loop playsinline autoplay></video>
         </div>
     </div>
  </div>
@@ -529,14 +529,14 @@
       const captions = {
         en: [
           "Stack the blocks in the rectangular block: red at the bottom, yellow in the middle, green on top.",
-          "Pack black camera into box.",
           "Clean up the eraser and pencils.",
+          "Pack black camera into box.",
           "Stack the blocks in the rectangular block: red at the bottom, yellow in the middle, green on top.",
         ],
         zh: [
           "将木块以红黄绿的顺序叠落。",
-          "将黑色的相机放入包装盒。",
           "整理橡皮和笔。",
+          "将黑色的相机放入包装盒。",
           "将木块以红黄绿的顺序叠落。",
         ]
       };
@@ -703,6 +703,16 @@
       // 1) Define your groups: each group has 3 sources: [left, middle, right]
       const triplets = [
         [
+          "assets/videos/gen_short_term/ori_z1_stackbox.mp4",
+          "assets/videos/gen_short_term/8_z1_stackbox.mp4",
+          "assets/videos/gen_short_term/16_z1_stackbox.mp4",
+        ],
+        [
+          "assets/videos/gen_short_term/ori_z1_dual_stackbox.mp4",
+          "assets/videos/gen_short_term/8_z1_dual_stackbox.mp4",
+          "assets/videos/gen_short_term/16_z1_dual_stackbox.mp4",
+        ],
+        [
           "assets/videos/gen_short_term/ori_z1_dual_stackbox_v2.mp4",
           "assets/videos/gen_short_term/8_z1_dual_stackbox_v2.mp4",
           "assets/videos/gen_short_term/16_z1_dual_stackbox_v2.mp4",
@@ -717,16 +727,7 @@
           "assets/videos/gen_short_term/8_g1_pack_camera.mp4",
           "assets/videos/gen_short_term/16_g1_pack_camera.mp4",
         ],
-        [
-          "assets/videos/gen_short_term/ori_z1_dual_stackbox.mp4",
-          "assets/videos/gen_short_term/8_z1_dual_stackbox.mp4",
-          "assets/videos/gen_short_term/16_z1_dual_stackbox.mp4",
-        ],
-        [
-          "assets/videos/gen_short_term/ori_z1_stackbox.mp4",
-          "assets/videos/gen_short_term/8_z1_stackbox.mp4",
-          "assets/videos/gen_short_term/16_z1_stackbox.mp4",
-        ]
+        // add more groups as needed ...
       ];
 
       // 2) Per-group, per-slot captions (EN/ZH). Order must match `triplets`.
@@ -878,11 +879,11 @@
     (function(){
       // TODO: replace these with your 10 video paths (5 groups × 2 videos)
       const pairs = [
+        ["assets/videos/gen_long_term/ori_z1_stackbox.mp4",  "assets/videos/gen_long_term/gen_z1_stackbox.mp4"],
+        ["assets/videos/gen_long_term/ori_z1_dual_stackbox.mp4",  "assets/videos/gen_long_term/gen_z1_dual_stackbox.mp4"],
         ["assets/videos/gen_long_term/ori_z1_dual_stackbox_v2.mp4",  "assets/videos/gen_long_term/gen_z1_dual_stackbox_v2.mp4"],
         ["assets/videos/gen_long_term/ori_z1_dual_cleanup_pencils.mp4",  "assets/videos/gen_long_term/gen_z1_dual_cleanup_pencils.mp4"],
-        ["assets/videos/gen_long_term/ori_g1_pack_camera.mp4",  "assets/videos/gen_long_term/gen_g1_pack_camera.mp4"]，
-        ["assets/videos/gen_long_term/ori_z1_dual_stackbox.mp4",  "assets/videos/gen_long_term/gen_z1_dual_stackbox.mp4"],
-        ["assets/videos/gen_long_term/ori_z1_stackbox.mp4",  "assets/videos/gen_long_term/gen_z1_stackbox.mp4"]
+        ["assets/videos/gen_long_term/ori_g1_pack_camera.mp4",  "assets/videos/gen_long_term/gen_g1_pack_camera.mp4"]
       ];
       // 2) Per-group, per-side captions (same length & order as `pairs`)
       const pairCaptions = {
